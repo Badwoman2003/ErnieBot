@@ -1,6 +1,7 @@
 import { resolve } from 'path';
 
 import vue from '@vitejs/plugin-vue';
+import vueJsx from '@vitejs/plugin-vue-jsx';
 import AutoImport from 'unplugin-auto-import/vite';
 import { TDesignResolver } from 'unplugin-vue-components/resolvers';
 import Components from 'unplugin-vue-components/vite';
@@ -10,6 +11,7 @@ import { defineConfig, loadEnv } from 'vite';
 export default defineConfig(({ mode }) => ({
   plugins: [
     vue(),
+    vueJsx(),
     AutoImport({
       resolvers: [
         TDesignResolver({

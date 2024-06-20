@@ -11,9 +11,9 @@
     <QuestionBox @submit="getAnswer" />
     <t-sticky-tool
       @click="handleStickyToolClick"
-      :offset="[-60, 60]"
+      :offset="stickyToolOffset"
       :type="stickyToolType"
-      placement="left-bottom"
+      placement="right-bottom"
     >
       <t-sticky-item label="新对话">
         <template #icon>
@@ -46,11 +46,20 @@ interface MessageItem {
 
 const appConfig = useAppConfig();
 
-const messageList = ref<MessageItem[]>([]);
+const messageList = ref<MessageItem[]>([
+  {
+    type: 'bot',
+    content: '我是个笨笨机器人，你可以问我任何问题，但我不一定能回答它。',
+  },
+]);
 const rootRef = ref<HTMLDivElement>();
 
 const stickyToolType = computed(() =>
   appConfig.enableMobileLayout ? 'compact' : 'normal',
+);
+
+const stickyToolOffset = computed(() =>
+  appConfig.enableMobileLayout ? [-70, 55] : [-60, 60],
 );
 
 // 新对话
@@ -61,7 +70,7 @@ function clearMessageList() {
 // 信息弹框
 function showInfo() {
   interact.dialog({
-    body: '基于 Neo4j 和 scikit-learn 的问答系统. Powered by Vue3 + Vite.',
+    body: '基于 Neo4j 和 scikit-learn 的问答系统. Powered by Vue3 & Vite & cc-devtools.',
     theme: 'info',
     cancelText: null,
   });

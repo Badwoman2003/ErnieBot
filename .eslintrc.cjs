@@ -6,6 +6,9 @@ module.exports = {
   parserOptions: {
     tsconfigRootDir: __dirname,
     extraFileExtensions: ['.vue'],
+    ecmaFeatures: {
+      jsx: true,
+    },
   },
   plugins: ['vue'],
   overrides: [

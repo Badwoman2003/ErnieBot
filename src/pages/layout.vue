@@ -29,6 +29,7 @@ console.log(constants);
     letter-spacing: 1px;
     background: #f6f6f6;
     box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.1);
+    color: var(--brand-main);
   }
   &_body {
     flex: 1 0;

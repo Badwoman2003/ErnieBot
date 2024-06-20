@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview",
+    "preview": "vite preview --host",
     "lint": "eslint . --ext ts,tsx,vue --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
@@ -21,6 +21,7 @@
     "@cc-devtools/eslint-config": "^0.0.5",
     "@types/node": "^20.14.6",
     "@vitejs/plugin-vue": "^5.0.4",
+    "@vitejs/plugin-vue-jsx": "^4.0.0",
     "eslint-plugin-vue": "^9.26.0",
     "sass": "^1.77.6",
     "typescript": "^5.2.2",
