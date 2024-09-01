@@ -1,19 +1,7 @@
 <template>
   <div class="question-box">
-    <input
-      ref="inputRef"
-      class="question-box_input"
-      type="text"
-      placeholder="请输入你的问题"
-      v-model="question"
-      autofocus
-    />
-    <t-button
-      :disabled="question.length === 0"
-      class="question-box_button"
-      @click="submit"
-      >提问</t-button
-    >
+    <input ref="inputRef" class="question-box_input" type="text" placeholder="请输入你的问题" v-model="question" autofocus />
+    <t-button :disabled="question.length === 0" class="question-box_button" @click="submit">提问</t-button>
   </div>
 </template>
 

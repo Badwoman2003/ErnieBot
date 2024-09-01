@@ -1,20 +1,10 @@
 <template>
   <div class="root" ref="rootRef">
     <transition-group name="list" tag="div" class="body">
-      <MessageBox
-        v-for="(item, index) in messageList"
-        :key="index"
-        :type="item.type"
-        :content="item.content"
-      />
+      <MessageBox v-for="(item, index) in messageList" :key="index" :type="item.type" :content="item.content" />
     </transition-group>
     <QuestionBox @submit="getAnswer" />
-    <t-sticky-tool
-      @click="handleStickyToolClick"
-      :offset="stickyToolOffset"
-      :type="stickyToolType"
-      placement="right-bottom"
-    >
+    <t-sticky-tool @click="handleStickyToolClick" :offset="stickyToolOffset" :type="stickyToolType" placement="right-bottom">
       <t-sticky-item label="新对话">
         <template #icon>
           <chat-add-icon />
@@ -54,13 +44,9 @@ const messageList = ref<MessageItem[]>([
 ]);
 const rootRef = ref<HTMLDivElement>();
 
-const stickyToolType = computed(() =>
-  appConfig.enableMobileLayout ? 'compact' : 'normal',
-);
+const stickyToolType = computed(() => (appConfig.enableMobileLayout ? 'compact' : 'normal'));
 
-const stickyToolOffset = computed(() =>
-  appConfig.enableMobileLayout ? [-70, 55] : [-60, 60],
-);
+const stickyToolOffset = computed(() => (appConfig.enableMobileLayout ? [-70, 55] : [-60, 60]));
 
 // 新对话
 function clearMessageList() {
@@ -94,9 +80,10 @@ async function getAnswer(question: string) {
   });
   try {
     const { data } = await apis.getAnswer(question);
+    const botReply = data.content;
     messageList.value.push({
       type: 'bot',
-      content: data,
+      content: botReply,
     });
 
     // 滚动到底部

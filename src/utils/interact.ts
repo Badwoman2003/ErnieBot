@@ -1,23 +1,7 @@
-import {
-  DialogCloseContext,
-  DialogPlugin,
-  MessagePlugin,
-  NotifyPlugin,
-} from 'tdesign-vue-next';
+import { DialogCloseContext, DialogPlugin, MessagePlugin, NotifyPlugin } from 'tdesign-vue-next';
 
-export type MessageThemeList =
-  | 'info'
-  | 'success'
-  | 'warning'
-  | 'error'
-  | 'question'
-  | 'loading';
-export type DialogThemeList =
-  | 'info'
-  | 'success'
-  | 'warning'
-  | 'default'
-  | 'danger';
+export type MessageThemeList = 'info' | 'success' | 'warning' | 'error' | 'question' | 'loading';
+export type DialogThemeList = 'info' | 'success' | 'warning' | 'default' | 'danger';
 
 export interface DialogOptions {
   body: string;
@@ -37,17 +21,7 @@ export interface DialogOptions {
 export default {
   // 弹出对话框
   dialog(options: DialogOptions) {
-    const {
-      body,
-      theme,
-      onConfirm,
-      onCancel,
-      onClose,
-      showOverlay = true,
-      header = '提示',
-      confirmText = '确认',
-      cancelText = '取消',
-    } = options;
+    const { body, theme, onConfirm, onCancel, onClose, showOverlay = true, header = '提示', confirmText = '确认', cancelText = '取消' } = options;
     const dialog = DialogPlugin({
       header,
       body,

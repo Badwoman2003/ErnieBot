@@ -11,11 +11,7 @@ export interface Route {
 }
 
 // 递归插入动态路由
-export function progressiveInsertRoute(
-  target: Route,
-  path: string[],
-  component: LazyComponent | Component,
-) {
+export function progressiveInsertRoute(target: Route, path: string[], component: LazyComponent | Component) {
   if (path.length === 1) {
     if (path[0] === 'page.vue') {
       // eslint-disable-next-line no-param-reassign
@@ -39,9 +35,7 @@ export function progressiveInsertRoute(
     // 忽略页面组件
     return;
   }
-  let targetIndex = target.children.findIndex(
-    ({ path: p }) => p === currentPath,
-  );
+  let targetIndex = target.children.findIndex(({ path: p }) => p === currentPath);
   if (targetIndex === -1) {
     target.children.push({
       path: currentPath,
@@ -49,11 +43,7 @@ export function progressiveInsertRoute(
     });
     targetIndex = target.children.length - 1;
   }
-  progressiveInsertRoute(
-    target.children[targetIndex],
-    path.slice(1),
-    component,
-  );
+  progressiveInsertRoute(target.children[targetIndex], path.slice(1), component);
 }
 
 export function getAsyncRoutes(pages: Record<string, () => Promise<any>>) {
