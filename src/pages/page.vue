@@ -79,12 +79,21 @@ async function getAnswer(question: string) {
     content: question,
   });
   try {
-    const { data } = await apis.getAnswer(question);
-    const botReply = data.content;
-    messageList.value.push({
-      type: 'bot',
-      content: botReply,
-    });
+    const data = await apis.getAnswer(question);
+    console.log(data);
+    const botReply = data.data.data.content;
+    if (botReply && botReply.length > 0) {
+      const replyText = botReply[0].data;
+      messageList.value.push({
+        type: 'bot',
+        content: replyText,
+      });
+    } else {
+      messageList.value.push({
+        type: 'bot',
+        content: 'err',
+      });
+    }
 
     // 滚动到底部
     nextTick(() => {
