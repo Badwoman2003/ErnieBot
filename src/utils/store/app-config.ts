@@ -11,9 +11,7 @@ export const useAppConfig = defineStore('app-config', () => {
   });
 
   // 移动端布局
-  const enableMobileLayout = computed(
-    () => windowSize.value.width <= constants.mobileLayoutBreakpoint,
-  );
+  const enableMobileLayout = computed(() => windowSize.value.width <= constants.mobileLayoutBreakpoint);
   // 是否展开Menu
   const expandMenu = ref(true);
   // Menu的当前值

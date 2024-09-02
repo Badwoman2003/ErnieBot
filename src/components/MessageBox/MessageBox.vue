@@ -8,12 +8,7 @@
       '--flexDirection': flexDirection,
     }"
   >
-    <t-avatar
-      v-if="type === 'bot'"
-      class="message-box_avatar"
-      :image="RobotAvatar"
-      :size="avatarSize"
-    ></t-avatar>
+    <t-avatar v-if="type === 'bot'" class="message-box_avatar" :image="RobotAvatar" :size="avatarSize"></t-avatar>
     <t-avatar v-else class="message-box_avatar" :size="avatarSize">
       <template #icon>
         <UserIcon />
@@ -67,9 +62,7 @@ const flexDirection = computed(() => {
   return 'row';
 });
 
-const avatarSize = computed(() =>
-  appConfig.enableMobileLayout ? 'medium' : 'large',
-);
+const avatarSize = computed(() => (appConfig.enableMobileLayout ? 'medium' : 'large'));
 </script>
 
 <style scoped lang="scss">

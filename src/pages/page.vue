@@ -39,7 +39,7 @@ const appConfig = useAppConfig();
 const messageList = ref<MessageItem[]>([
   {
     type: 'bot',
-    content: '我是个笨笨机器人，你可以问我任何问题，但我不一定能回答它。',
+    content: '你好，我是你的综测填报小助手，关于综测填报的任何问题都可以咨询我噢！',
   },
 ]);
 const rootRef = ref<HTMLDivElement>();
