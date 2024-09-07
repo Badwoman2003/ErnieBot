@@ -3,7 +3,7 @@
     <transition-group name="list" tag="div" class="body">
       <MessageBox v-for="(item, index) in messageList" :key="index" :type="item.type" :content="item.content" />
     </transition-group>
-    <QuestionBox @submit="getAnswer" />
+    <QuestionBox @submit="getAnswer" :loading />
     <t-sticky-tool @click="handleStickyToolClick" :offset="stickyToolOffset" :type="stickyToolType" placement="right-bottom">
       <t-sticky-item label="新对话">
         <template #icon>
@@ -43,6 +43,7 @@ const messageList = ref<MessageItem[]>([
   },
 ]);
 const rootRef = ref<HTMLDivElement>();
+const loading = ref(false);
 
 const stickyToolType = computed(() => (appConfig.enableMobileLayout ? 'compact' : 'normal'));
 
@@ -56,7 +57,7 @@ function clearMessageList() {
 // 信息弹框
 function showInfo() {
   interact.dialog({
-    body: '基于 Neo4j 和 scikit-learn 的问答系统. Powered by Vue3 & Vite & cc-devtools.',
+    body: 'Powered by Vue3 & Vite & cc-devtools.',
     theme: 'info',
     cancelText: null,
   });
@@ -78,6 +79,7 @@ async function getAnswer(question: string) {
     type: 'user',
     content: question,
   });
+  loading.value = true;
   try {
     const data = await apis.getAnswer(question);
     console.log(data);
@@ -102,6 +104,8 @@ async function getAnswer(question: string) {
   } catch (err) {
     console.log(err);
     interact.message.error('提问出错，请稍后再试');
+  } finally {
+    loading.value = false;
   }
 }
 </script>
