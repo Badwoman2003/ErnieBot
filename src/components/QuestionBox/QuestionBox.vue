@@ -1,21 +1,24 @@
 <template>
   <div class="question-box">
     <input ref="inputRef" class="question-box_input" type="text" placeholder="请输入你的问题" v-model="question" autofocus />
-    <t-button :loading :disabled="question.length === 0" class="question-box_button" @click="submit">提问</t-button>
+    <t-button :loading :disabled class="question-box_button" @click="submit">提问</t-button>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { onUnmounted, ref, onMounted } from 'vue';
 
 const emit = defineEmits<{
   (e: 'submit', value: string): void;
 }>();
-defineProps<{
+const props = defineProps<{
   loading?: boolean;
 }>();
 const question = ref('');
 const inputRef = ref<HTMLInputElement>();
+
+const disabled = computed(() => question.value.length === 0 || props.loading);
 
 function submit() {
   emit('submit', question.value);
@@ -23,7 +26,7 @@ function submit() {
 }
 
 function submitOnEnter(e: KeyboardEvent) {
-  if (question.value.length > 0 && e.key === 'Enter') {
+  if (!disabled.value && e.key === 'Enter') {
     submit();
   }
 }
@@ -42,8 +45,7 @@ onUnmounted(() => {
 .question-box {
   @include flex(row, flex-start, center);
   @include padding(0 1.6rem);
-  position: fixed;
-  bottom: 1.6rem;
+  flex-shrink: 0;
   background: #fafafa;
   width: calc(100% - 3.2rem);
   max-width: $pad;

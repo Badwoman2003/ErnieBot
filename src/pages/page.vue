@@ -116,23 +116,24 @@ async function getAnswer(question: string) {
   @include flex(column, flex-start, center);
   @include padding();
   position: relative;
-  overflow: auto;
+  overflow: hidden;
   background: #f6f6f6;
   scroll-behavior: smooth;
+}
+.body {
+  @include flex(column, flex-start, flex-start);
+  @include padding(0 0 7.2rem 0);
+  flex: 1 0;
+  width: 100%;
+  max-width: $pad;
+  gap: 1.6rem;
+  overflow-y: auto;
 
   &::-webkit-scrollbar {
     display: none;
     width: 0;
     height: 0;
   }
-}
-.body {
-  @include flex(column, flex-start, flex-start);
-  @include padding(0 0 7.2rem 0);
-  width: 100%;
-  height: fit-content;
-  max-width: $pad;
-  gap: 1.6rem;
 }
 
 .list-enter-active,
