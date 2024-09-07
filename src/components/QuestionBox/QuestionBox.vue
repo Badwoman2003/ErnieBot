@@ -1,7 +1,7 @@
 <template>
   <div class="question-box">
     <input ref="inputRef" class="question-box_input" type="text" placeholder="请输入你的问题" v-model="question" autofocus />
-    <t-button :disabled="question.length === 0" class="question-box_button" @click="submit">提问</t-button>
+    <t-button :loading :disabled="question.length === 0" class="question-box_button" @click="submit">提问</t-button>
   </div>
 </template>
 
@@ -10,6 +10,9 @@ import { onUnmounted, ref, onMounted } from 'vue';
 
 const emit = defineEmits<{
   (e: 'submit', value: string): void;
+}>();
+defineProps<{
+  loading?: boolean;
 }>();
 const question = ref('');
 const inputRef = ref<HTMLInputElement>();
@@ -31,6 +34,8 @@ onMounted(() => {
 onUnmounted(() => {
   inputRef.value?.removeEventListener('keypress', submitOnEnter);
 });
+
+
 </script>
 
 <style scoped lang="scss">
