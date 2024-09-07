@@ -67,7 +67,7 @@ const avatarSize = computed(() => (appConfig.enableMobileLayout ? 'medium' : 'la
 
 <style scoped lang="scss">
 .message-box {
-  @include flex(var(--flexDirection), flex-start, center);
+  @include flex(var(--flexDirection), flex-start, flex-start);
   @include size(100%, fit-content);
   flex-shrink: 0;
   gap: 0.8rem;
