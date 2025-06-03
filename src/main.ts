@@ -12,7 +12,10 @@ import '@assets/styles/theme.css';
 
 const pinia = createPinia();
 
-createApp(App).use(pinia).use(router).mount('#app');
+createApp(App)
+  .use(pinia)
+  .use(router)
+  .mount('#app');
 
 const appConfig = useAppConfig();
 const userId = '20212434027';
