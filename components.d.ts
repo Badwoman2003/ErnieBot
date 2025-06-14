@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     DefaultLayout: typeof import('./src/components/layout/default-layout.vue')['default']
+    DialogBox: typeof import('./src/components/DialogBox/DialogBox.vue')['default']
     MessageBox: typeof import('./src/components/MessageBox/MessageBox.vue')['default']
     NotFound: typeof import('./src/components/not-found.vue')['default']
     QuestionBox: typeof import('./src/components/QuestionBox/QuestionBox.vue')['default']
@@ -15,6 +16,8 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     TAvatar: typeof import('tdesign-vue-next')['Avatar']
     TButton: typeof import('tdesign-vue-next')['Button']
+    TDialog: typeof import('tdesign-vue-next')['Dialog']
+    TSpace: typeof import('tdesign-vue-next')['Space']
     TStickyItem: typeof import('tdesign-vue-next')['StickyItem']
     TStickyTool: typeof import('tdesign-vue-next')['StickyTool']
   }

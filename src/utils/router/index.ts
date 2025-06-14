@@ -1,5 +1,6 @@
 import DefaultLayout from '@components/layout/default-layout.vue';
 import NotFound from '@components/not-found.vue';
+import DialogBox from '@/components/DialogBox/DialogBox.vue';
 import { RouteRecordRaw, createRouter, createWebHistory } from 'vue-router';
 
 import { Route, getAsyncRoutes } from './async-routes';
@@ -50,6 +51,13 @@ function setRouteRecords(asyncRoute: Route, target: RouteRecordRaw[]) {
 
 const routes: RouteRecordRaw[] = [
   // 额外的路由
+  {
+    path: '/test',
+    name: 'test',
+    component: DialogBox,
+    children: []
+    
+  }
 ];
 
 setRouteRecords(asyncRouteRoot, routes);
