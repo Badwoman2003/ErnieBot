@@ -51,11 +51,12 @@ const showAnswer = async (chatId: string): Promise<any> => {
 const confirmAnswer = async (chatId: string): Promise<any> => {
   const ConfirmUrl = 'v3/chat/retrieve';
   const conversationId = useDialog.conversationId;
+  
   try {
     let status: string = ''; // 对话状态
     let time = 0; // 请求次数
     
-    while (time < 10) { // 限制最大请求次数为10
+    while (time < constants.max_time) {
       time++;
       const res = await axios.get(ConfirmUrl, {
         params: {
@@ -79,7 +80,7 @@ const confirmAnswer = async (chatId: string): Promise<any> => {
       }
       
       // 如果未完成且未达到最大次数，则等待1秒后继续
-      if (time < 10) {
+      if (time < constants.max_time) {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }

@@ -14,9 +14,11 @@ declare module 'vue' {
     QuestionBox: typeof import('./src/components/QuestionBox/QuestionBox.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TAffix: typeof import('tdesign-vue-next')['Affix']
     TAvatar: typeof import('tdesign-vue-next')['Avatar']
     TButton: typeof import('tdesign-vue-next')['Button']
     TDialog: typeof import('tdesign-vue-next')['Dialog']
+    TDrawer: typeof import('tdesign-vue-next')['Drawer']
     TStickyItem: typeof import('tdesign-vue-next')['StickyItem']
     TStickyTool: typeof import('tdesign-vue-next')['StickyTool']
   }
