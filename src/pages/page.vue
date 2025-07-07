@@ -4,7 +4,8 @@
       <MessageBox v-for="(item, index) in messageList" :key="index" :type="item.type" :content="item.content" />
     </transition-group>
     <QuestionBox @submit="getAnswer" :loading />
-    <t-sticky-tool @click="handleStickyToolClick" :offset="stickyToolOffset" :type="stickyToolType" placement="right-bottom">
+    <t-sticky-tool @click="handleStickyToolClick" :offset="stickyToolOffset" :type="stickyToolType"
+      placement="right-bottom">
       <t-sticky-item label="新对话">
         <template #icon>
           <chat-add-icon />
@@ -21,7 +22,7 @@
 
 <script setup lang="ts">
 import { ChatAddIcon, InfoCircleIcon } from 'tdesign-icons-vue-next';
-import { ref, nextTick, computed } from 'vue';
+import { ref, nextTick, computed, onMounted } from 'vue';
 
 import apis from '@/apis';
 import MessageBox from '@/components/MessageBox/MessageBox.vue';
@@ -36,6 +37,7 @@ interface MessageItem {
 
 const appConfig = useAppConfig();
 
+const conversationId = ref<string | null>(null);
 const messageList = ref<MessageItem[]>([
   {
     type: 'bot',
@@ -81,19 +83,16 @@ async function getAnswer(question: string) {
   });
   loading.value = true;
   try {
-    const data = await apis.getAnswer(question);
-    console.log(data);
-    const botReply = data.data.data.content;
-    if (botReply && botReply.length > 0) {
-      const replyText = botReply[0].data;
+    const answer = await apis.getAnswer(question);
+    if (answer && answer.length > 0) {
       messageList.value.push({
         type: 'bot',
-        content: replyText,
+        content: answer,
       });
     } else {
       messageList.value.push({
         type: 'bot',
-        content: 'err',
+        content: '未获得有效回答，请稍后再试。',
       });
     }
 
@@ -102,12 +101,26 @@ async function getAnswer(question: string) {
       rootRef.value?.scrollTo(0, rootRef.value?.scrollHeight);
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     interact.message.error('提问出错，请稍后再试');
   } finally {
     loading.value = false;
   }
 }
+
+const createDialog = async () => {
+  try {
+    conversationId.value = await apis.createDialog();
+    console.log('当前会话id: ' + conversationId.value);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+onMounted(() => {
+  createDialog();
+})
+
 </script>
 
 <style scoped lang="scss">
@@ -120,6 +133,7 @@ async function getAnswer(question: string) {
   background: #f6f6f6;
   scroll-behavior: smooth;
 }
+
 .body {
   @include flex(column, flex-start, flex-start);
   @include padding(0 0 7.2rem 0);
@@ -140,6 +154,7 @@ async function getAnswer(question: string) {
 .list-leave-active {
   transition: all 0.5s ease;
 }
+
 .list-enter-from,
 .list-leave-to {
   opacity: 0;

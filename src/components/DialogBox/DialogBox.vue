@@ -14,6 +14,7 @@
     </div>
 
 </template>
+
 <script setup lang="ts">
 import { ref, nextTick } from 'vue';
 import apis from '@/apis';
@@ -43,28 +44,14 @@ async function getAnswer(question: string) {
     });
     loading.value = true;
     try {
-        const data = await apis.getAnswer(question);
-        console.log(data);
-        const botReply = data.data.data.content;
-        if (botReply && botReply.length > 0) {
-            const replyText = botReply[0].data;
-            messageList.value.push({
-                type: 'bot',
-                content: replyText,
-            });
-        } else {
-            messageList.value.push({
-                type: 'bot',
-                content: 'err',
-            });
-        }
-
+        const answer = await apis.getAnswer(question);
+        console.log('获得回答：' + answer);
         // 滚动到底部
         nextTick(() => {
             rootRef.value?.scrollTo(0, rootRef.value?.scrollHeight);
         });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         interact.message.error('提问出错，请稍后再试');
     } finally {
         loading.value = false;
@@ -74,6 +61,7 @@ async function getAnswer(question: string) {
 const bodyClose = () => {
     bodyVisible.value = false;
 };
+
 </script>
 
 <style scoped lang="scss">
