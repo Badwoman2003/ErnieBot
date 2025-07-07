@@ -9,8 +9,6 @@
 
 <script setup lang="ts">
 import constants from '@/utils/constants';
-
-console.log(constants);
 </script>
 
 <style scoped lang="scss">
@@ -31,6 +29,7 @@ console.log(constants);
     box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.1);
     color: var(--brand-main);
   }
+
   &_body {
     flex: 1 0;
     width: 100%;

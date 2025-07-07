@@ -50,6 +50,12 @@ function setRouteRecords(asyncRoute: Route, target: RouteRecordRaw[]) {
 
 const routes: RouteRecordRaw[] = [
   // 额外的路由
+  {
+    path: '/test',
+    name: 'test',
+    component: () => import('@/components/DialogBox/DialogBox.vue'),
+    children: []
+  }
 ];
 
 setRouteRecords(asyncRouteRoot, routes);
