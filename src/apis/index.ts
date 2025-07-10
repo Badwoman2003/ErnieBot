@@ -14,6 +14,7 @@ const userId = useUser.userId;
 const showAnswer = async (chatId: string): Promise<any> => {
   const AnswerUrl = 'v3/chat/message/list';
   const conversationId = useDialog.conversationId;
+
   try {
     const res = await axios.get(AnswerUrl, {
       params: {
@@ -25,8 +26,6 @@ const showAnswer = async (chatId: string): Promise<any> => {
     if (resData.code !== 0) {
       throw new Error(`获取回答时出错 (${resData.code}): ${resData.msg}`);
     }
-    console.log(resData.data);
-
     return resData.data;
 
   } catch (err) {
@@ -37,6 +36,7 @@ const showAnswer = async (chatId: string): Promise<any> => {
 const confirmAnswer = async (chatId: string): Promise<any> => {
   const ConfirmUrl = 'v3/chat/retrieve';
   const conversationId = useDialog.conversationId;
+  console.log(conversationId);
 
   try {
     let status: string = ''; // 对话状态

@@ -23,7 +23,6 @@ export const useAppConfig = defineStore('app-config', () => {
       width: window.innerWidth,
       height: window.innerHeight,
     };
-    console.log('updateWindowSize: ', windowSize.value);
   }
 
   // 展开/折叠Menu

@@ -1,4 +1,14 @@
 <template>
+    <div class="page-content" ref="pageContentRef">
+        <test-content />
+        <!-- 悬浮询问AI按钮 -->
+        <transition name="t-fade">
+            <t-button v-if="showAskBtn" :style="askBtnStyle" size="small" class="ask-ai-btn" @click="handleAskAI">
+                询问AI
+            </t-button>
+        </transition>
+    </div>
+
     <div class="affix-container">
         <t-affix class="affix" :offset-top="initialTop">
             <t-button theme="primary" size="large" class="t-button" shape="circle" @click="bodyVisible = true">
@@ -6,7 +16,7 @@
                     <img :src="RobotWhite" />
                 </template>
             </t-button>
-            <t-drawer className="t-drawer" header="综测填报智能体" :size="drawerSize" :visible="bodyVisible"
+            <t-drawer class="t-drawer" header="综测填报智能体" :size="drawerSize" :visible="bodyVisible"
                 :onBeforeOpen="createDialog" sizeDraggable :onClose="bodyClose" :closeBtn="true" closeOnOverlayClick>
                 <transition-group name="list" tag="div" ref="messageListRef" class="transition-group">
                     <MessageBox v-for="(item, index) in messageList" :key="index" :type="item.type"
@@ -24,25 +34,37 @@
 import { ref, nextTick, onMounted, onUnmounted } from 'vue';
 import RobotWhite from '@assets/images/robot_white.png';
 
+import TestContent from './TestContent.vue';
 import apis from '@/apis/index';
 import MessageBox from '@/components/MessageBox/MessageBox.vue';
 import interact from '@/utils/interact';
+import debounce from '@/utils/tools/debounce';
 
+// 控制抽屉显示
 const bodyVisible = ref(false);
+// 控制加载状态
 const loading = ref(false);
+// 当前会话ID
 const conversationId = ref<string | null>(null);
+// 是否首次创建会话
 const isFirst = ref(true);
+// 抽屉底部偏移量
 const offsetBottom = 80;
+// 消息列表容器ref
 const messageListRef = ref<HTMLDivElement | null>(null);
+// 抽屉顶部偏移
 const initialTop = ref<number>(0);
+// 抽屉宽度
 const drawerSize = ref<string>('40%');
 
+// 消息项类型定义
 interface MessageItem {
     type: 'bot' | 'user';
     content: string;
     followUps?: string[];
 }
 
+// 消息列表
 const messageList = ref<MessageItem[]>([
     {
         type: 'bot',
@@ -50,7 +72,17 @@ const messageList = ref<MessageItem[]>([
     },
 ]);
 
+/**
+ * 发送问题并获取AI回答
+ * @param question 用户输入的问题
+ */
 const getAnswer = async (question: string) => {
+    // 隐藏上一条bot消息的联想追问
+    const lastMsg = messageList.value.slice().reverse().find(msg => msg.type === 'bot');
+    if (lastMsg && lastMsg.followUps) {
+        lastMsg.followUps = [];
+    }
+
     // 滚动到底部
     nextTick(() => {
         const el = messageListRef.value;
@@ -58,12 +90,15 @@ const getAnswer = async (question: string) => {
             el.scrollTop = el.scrollHeight;
         }
     });
+
+    // 添加用户消息
     messageList.value.push({
         type: 'user',
         content: question,
     });
     loading.value = true;
     try {
+        // 获取AI回答
         const { answer, followUps } = await apis.getAnswer(question);
         if (answer && answer.length > 0) {
             messageList.value.push({
@@ -92,10 +127,14 @@ const getAnswer = async (question: string) => {
     }
 };
 
+// 关闭抽屉
 const bodyClose = () => {
     bodyVisible.value = false;
 };
 
+/**
+ * 创建新对话，仅首次触发
+ */
 const createDialog = async () => {
     if (isFirst.value === true) {
         isFirst.value = false;
@@ -108,6 +147,9 @@ const createDialog = async () => {
     }
 };
 
+/**
+ * 响应式调整抽屉宽度
+ */
 const calcDrawerSize = () => {
     const viewportWidth = window.innerWidth;
     if (viewportWidth > 850) drawerSize.value = '40%';
@@ -118,41 +160,148 @@ const calcDrawerSize = () => {
     else null;
 }
 
-// 计算初始/更新offset-top
+/**
+ * 计算抽屉顶部偏移
+ */
 const calculateInitialTop = () => {
-    const viewportHeight = window.innerHeight; // 获取当前窗口高度
-    initialTop.value = viewportHeight - offsetBottom; // 动态计算顶部偏移
+    const viewportHeight = window.innerHeight;
+    initialTop.value = viewportHeight - offsetBottom;
 };
 
-// 定义防抖函数（避免频繁触发计算）
-const debounce = (fn: () => void, delay = 100) => {
-    let timer: NodeJS.Timeout | null = null;
-    return () => {
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(fn, delay);
+// page-content区域ref
+const pageContentRef = ref<HTMLElement | null>(null);
+// 控制AI划词按钮显示
+const showAskBtn = ref(false);
+// AI划词按钮样式
+const askBtnStyle = ref<Record<string, string>>({});
+// 用户当前选中的文本
+const selectedText = ref('');
+
+/**
+ * 监听用户选中文本，判断是否在page-content内
+ */
+const handleSelectionChange = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed) {
+        showAskBtn.value = false;
+        selectedText.value = '';
+        return;
+    }
+    const text = selection.toString().trim();
+    if (!text) {
+        showAskBtn.value = false;
+        selectedText.value = '';
+        return;
+    }
+    // 判断选区是否在page-content内
+    const anchorNode = selection.anchorNode;
+    if (!anchorNode) {
+        showAskBtn.value = false;
+        selectedText.value = '';
+        return;
+    }
+    let parent: Node | null = anchorNode;
+    let isInPageContent = false;
+    while (parent) {
+        if (parent === pageContentRef.value) {
+            isInPageContent = true;
+            break;
+        }
+        parent = parent.parentNode;
+    }
+    if (!isInPageContent) {
+        showAskBtn.value = false;
+        selectedText.value = '';
+        return;
+    }
+    selectedText.value = text;
+}
+
+/**
+ * 鼠标松开时判断是否弹出AI划词按钮，并计算按钮位置
+ */
+const handleMouseUp = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed) {
+        showAskBtn.value = false;
+        return;
+    }
+    if (!selectedText.value) {
+        showAskBtn.value = false;
+        return;
+    }
+    // 获取选区位置
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    // 如果选区太靠上，按钮显示在下方，否则在上方
+    let top = rect.top - 36;
+    if (rect.top < 60) {
+        top = rect.bottom + 12;
+    }
+    askBtnStyle.value = {
+        position: 'fixed',
+        left: `${rect.left + rect.width / 2 - 40}px`,
+        top: `${top}px`,
+        zIndex: '9999',
     };
-};
+    showAskBtn.value = true;
+}
 
+/**
+ * 点击AI划词按钮，打开抽屉并自动提问
+ */
+const handleAskAI = async () => {
+    showAskBtn.value = false;
+    bodyVisible.value = true;
+    await createDialog();
+    await setTimeout(() => { }, 600); // 等待抽屉动画
+    getAnswer(selectedText.value);
+}
+
+// 防抖处理：窗口resize时调整抽屉和affix
+const handleResizeAffix = debounce(calculateInitialTop);
+const handleResizeDrow = debounce(calcDrawerSize);
+
+// 生命周期：挂载时添加事件监听，卸载时移除
 onMounted(() => {
     calculateInitialTop();
     calcDrawerSize();
-    const handleResizeAffix = debounce(calculateInitialTop); // 防抖处理
-    const handleResizeDrow = debounce(calcDrawerSize);
-    window.addEventListener('resize', handleResizeAffix); // 监听窗口变化
-    window.addEventListener('resize', handleResizeDrow);
 
-    // 组件卸载时移除监听（避免内存泄漏）
-    onUnmounted(() => {
-        window.removeEventListener('resize', handleResizeAffix);
-        window.removeEventListener('resize', handleResizeDrow);
-    });
+    window.addEventListener('resize', handleResizeAffix);
+    window.addEventListener('resize', handleResizeDrow);
+    document.addEventListener('selectionchange', handleSelectionChange);
+    document.addEventListener('mouseup', handleMouseUp);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', handleResizeAffix);
+    window.removeEventListener('resize', handleResizeDrow);
+    document.removeEventListener('selectionchange', handleSelectionChange);
+    document.removeEventListener('mouseup', handleMouseUp);
 });
 </script>
 
 <style scoped lang="scss">
+.t-fade-enter-active,
+.t-fade-leave-active {
+    transition: opacity 0.3s cubic-bezier(0.38, 0, 0.24, 1);
+}
+
+.t-fade-enter-from,
+.t-fade-leave-to {
+    opacity: 0;
+}
+
+.t-fade-enter-to,
+.t-fade-leave-from {
+    opacity: 1;
+}
+
 .affix-container {
+    z-index: 3000;
     position: fixed;
     right: 40px;
+    bottom: 40px;
 
     .t-button {
         padding: 6px;
@@ -161,10 +310,8 @@ onMounted(() => {
 
     .transition-group {
         @include flex(column, flex-start, flex-start);
-        @include padding(0 0 10rem 0);
         flex: 1 0;
         width: 100%;
-        // max-width: $pad;
         gap: 1.6rem;
         overflow-y: auto;
 
@@ -175,13 +322,25 @@ onMounted(() => {
         }
     }
 
+    .t-affix {
+        z-index: 3000;
+    }
+
     .t-drawer {
-        min-width: 20vw !important;
+        z-index: 3100 !important;
 
         .question-box {
             margin: 0 auto;
         }
     }
 
+}
+
+.ask-ai-btn {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: auto;
+    background-color: var(--td-brand-color-6);
+    border: 0;
 }
 </style>
