@@ -1,7 +1,7 @@
 <template>
   <div class="question-box">
     <input ref="inputRef" class="question-box_input" type="text" placeholder="请输入你的问题" v-model="question" autofocus />
-    <t-button :loading :disabled class="question-box_button" @click="submit">提问</t-button>
+    <t-button :loading :disabled class="question-box_button" size="medium" @click="submit">提问</t-button>
   </div>
 </template>
 
@@ -49,7 +49,7 @@ onUnmounted(() => {
   background: #fafafa;
   width: calc(100% - 3.2rem);
   max-width: $pad;
-  height: 5.6rem;
+  height: 4.8rem;
   border-radius: 0.8rem;
   box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.1);
   gap: 0.8rem;
@@ -64,6 +64,7 @@ onUnmounted(() => {
       outline: none;
     }
   }
+
   &_button {
     flex-shrink: 0;
   }

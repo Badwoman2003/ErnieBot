@@ -25,23 +25,9 @@ const showAnswer = async (chatId: string): Promise<any> => {
     if (resData.code !== 0) {
       throw new Error(`获取回答时出错 (${resData.code}): ${resData.msg}`);
     }
+    console.log(resData.data);
 
-    // 筛选出类型为answer的消息
-    const answerMessages: Array<any> = resData.data.filter((item: any) => {
-      if (item.type === 'answer') return true;
-    });
-    if (answerMessages.length === 0) {
-      throw new Error('未获得有效的回答内容，请稍后再试。');
-    }
-
-    // 拼接多个answer内容(如果有多个)
-    let answer: string = '';
-    answerMessages.forEach((msg: any, index: number) => {
-        answer += `${(index + 1 === 1) ? '' : (index + 1) + '. '}${msg.content}\n`;
-    });
-    // 去除末尾多余的换行符
-    answer = answer.trim();
-    return answer;
+    return resData.data;
 
   } catch (err) {
     throw err;
@@ -51,11 +37,11 @@ const showAnswer = async (chatId: string): Promise<any> => {
 const confirmAnswer = async (chatId: string): Promise<any> => {
   const ConfirmUrl = 'v3/chat/retrieve';
   const conversationId = useDialog.conversationId;
-  
+
   try {
     let status: string = ''; // 对话状态
     let time = 0; // 请求次数
-    
+
     while (time < constants.max_time) {
       time++;
       const res = await axios.get(ConfirmUrl, {
@@ -65,29 +51,29 @@ const confirmAnswer = async (chatId: string): Promise<any> => {
         }
       });
       const resData = res.data;
-      
+
       if (resData.code !== 0) {
         throw new Error(`确认对话时出错 (${resData.code}): ${resData.msg}`);
       }
-      
+
       status = resData.data.status;
       console.log(`请求次数：${time}，对话状态: ${status}`);
-      
+
       if (status === 'completed') {
         // 对话状态为完成，获取回答内容
-        const content = await showAnswer(chatId); 
+        const content = await showAnswer(chatId);
         return content;
       }
-      
+
       // 如果未完成且未达到最大次数，则等待1秒后继续
       if (time < constants.max_time) {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
-    
+
     // 达到最大请求次数仍未完成
     throw new Error('对话状态未完成，请稍后再试。');
-  } catch (err) { 
+  } catch (err) {
     throw err;
   }
 }
@@ -137,12 +123,25 @@ const createDialog = async (): Promise<any> => {
   }
 }
 
-const getAnswer = async (question: string): Promise<any> => { 
+const getAnswer = async (question: string): Promise<any> => {
   try {
     const chatId = await startConversation(question); // 获取对话ID
-    const answer = await confirmAnswer(chatId); // 确认对话并获取回答内容
-    return answer;
-  } catch (err) { 
+    const answerList = await confirmAnswer(chatId); // 确认对话并获取回答内容
+    const answerMessages = answerList.filter((item: any) => item.type === 'answer');
+    const followUpMessages = answerList.filter((item: any) => item.type === 'follow_up');
+
+    let answer: string = '';
+    answerMessages.forEach((msg: any, index: number) => {
+      answer += `${(index + 1 === 1) ? '' : (index + 1) + '. '}${msg.content}\n`;
+    });
+    answer = answer.trim();
+
+    return {
+      answer,
+      followUps: followUpMessages.map((item: any) => item.content)
+    };
+
+  } catch (err) {
     throw err;
   }
 }

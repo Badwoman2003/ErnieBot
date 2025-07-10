@@ -8,9 +8,9 @@
             </t-button>
             <t-drawer className="t-drawer" header="综测填报智能体" :size="drawerSize" :visible="bodyVisible"
                 :onBeforeOpen="createDialog" sizeDraggable :onClose="bodyClose" :closeBtn="true" closeOnOverlayClick>
-                <transition-group name="list" tag="div" class="transition-group">
+                <transition-group name="list" tag="div" ref="messageListRef" class="transition-group">
                     <MessageBox v-for="(item, index) in messageList" :key="index" :type="item.type"
-                        :content="item.content" />
+                        :content="item.content" :followUps="item.followUps" @follow-up="getAnswer" />
                 </transition-group>
                 <template #footer>
                     <QuestionBox class="question-box" @submit="getAnswer" :loading />
@@ -33,13 +33,14 @@ const loading = ref(false);
 const conversationId = ref<string | null>(null);
 const isFirst = ref(true);
 const offsetBottom = 80;
-const rootRef = ref<HTMLDivElement>();
+const messageListRef = ref<HTMLDivElement | null>(null);
 const initialTop = ref<number>(0);
 const drawerSize = ref<string>('40%');
 
 interface MessageItem {
     type: 'bot' | 'user';
     content: string;
+    followUps?: string[];
 }
 
 const messageList = ref<MessageItem[]>([
@@ -50,17 +51,25 @@ const messageList = ref<MessageItem[]>([
 ]);
 
 const getAnswer = async (question: string) => {
+    // 滚动到底部
+    nextTick(() => {
+        const el = messageListRef.value;
+        if (el) {
+            el.scrollTop = el.scrollHeight;
+        }
+    });
     messageList.value.push({
         type: 'user',
         content: question,
     });
     loading.value = true;
     try {
-        const answer = await apis.getAnswer(question);
+        const { answer, followUps } = await apis.getAnswer(question);
         if (answer && answer.length > 0) {
             messageList.value.push({
                 type: 'bot',
                 content: answer,
+                followUps
             });
         } else {
             messageList.value.push({
@@ -73,12 +82,14 @@ const getAnswer = async (question: string) => {
         interact.message.error('提问出错，请稍后再试');
     } finally {
         loading.value = false;
+        // 滚动到底部
+        nextTick(() => {
+            const el = messageListRef.value;
+            if (el) {
+                el.scrollTop = el.scrollHeight;
+            }
+        });
     }
-
-    // 滚动到底部
-    nextTick(() => {
-        rootRef.value?.scrollTo(0, rootRef.value?.scrollHeight);
-    });
 };
 
 const bodyClose = () => {
@@ -153,7 +164,7 @@ onMounted(() => {
         @include padding(0 0 10rem 0);
         flex: 1 0;
         width: 100%;
-        max-width: $pad;
+        // max-width: $pad;
         gap: 1.6rem;
         overflow-y: auto;
 
@@ -166,6 +177,11 @@ onMounted(() => {
 
     .t-drawer {
         min-width: 20vw !important;
+
+        .question-box {
+            margin: 0 auto;
+        }
     }
+
 }
 </style>

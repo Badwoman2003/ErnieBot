@@ -11,14 +11,22 @@
         <UserIcon />
       </template>
     </t-avatar>
-    <div ref="markdownContainer" class="message-box_bubble" v-html="parsedContent"></div>
+    <div>
+      <div ref="markdownContainer" class="message-box_bubble" v-html="parsedContent"></div>
+      <div v-if="type === 'bot' && props.followUps && props.followUps.length" class="follow-up-list">
+        <t-button v-for="(item, idx) in props.followUps" :key="idx" @click="emit('follow-up', item)" theme="default"
+          variant="base" size="small" class="follow-up-btn">
+          {{ item }}
+        </t-button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import RobotAvatar from '@assets/images/robot.png';
 import { UserIcon } from 'tdesign-icons-vue-next';
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, defineEmits } from 'vue';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.min.css';
@@ -27,6 +35,11 @@ import { useAppConfig } from '@/utils/store/app-config';
 const props = defineProps<{
   type: 'user' | 'bot';
   content: string;
+  followUps?: string[];
+}>();
+
+const emit = defineEmits<{
+  (e: 'follow-up', followUp: string): void;
 }>();
 
 const appConfig = useAppConfig();
@@ -85,7 +98,7 @@ onMounted(() => {
   align-items: flex-start;
   gap: 0.8rem;
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
 }
 
 .message-box_avatar {
@@ -95,7 +108,7 @@ onMounted(() => {
 .message-box_bubble {
   padding: 1.2rem;
   flex-shrink: 1;
-  max-width: 80%;
+  // max-width: 80%;
   word-break: break-word;
   color: var(--color);
   background-color: var(--bgColor);
@@ -169,6 +182,17 @@ onMounted(() => {
     padding: 0 1rem;
     border-left: 3px solid #ddd;
     color: #777;
+  }
+}
+
+.follow-up-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  .follow-up-btn {
+    margin-top: 1rem;
+    padding: 1.3rem 1rem;
   }
 }
 </style>
