@@ -18,3 +18,17 @@ $desktop: 1024px;
   width: $width;
   height: $height;
 }
+
+@mixin responsive-width($selector, $default-width, $breakpoints) {
+  #{$selector} {
+    width: $default-width !important;
+  }
+
+  @each $max-width, $width in $breakpoints {
+    @media (max-width: $max-width) {
+      #{$selector} {
+        width: $width !important;
+      }
+    }
+  }
+}

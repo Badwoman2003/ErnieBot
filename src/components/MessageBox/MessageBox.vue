@@ -1,10 +1,13 @@
 <template>
-  <div class="message-box" :style="{
-    '--borderRadius': borderRadius,
-    '--bgColor': bgColor,
-    '--color': color,
-    '--flexDirection': flexDirection,
-  }">
+  <div
+    class="message-box"
+    :style="{
+      '--borderRadius': borderRadius,
+      '--bgColor': bgColor,
+      '--color': color,
+      '--flexDirection': flexDirection,
+    }"
+  >
     <t-avatar v-if="type === 'bot'" class="message-box_avatar" :image="RobotAvatar" :size="avatarSize"></t-avatar>
     <t-avatar v-else class="message-box_avatar" :size="avatarSize">
       <template #icon>
@@ -14,8 +17,15 @@
     <div>
       <div ref="markdownContainer" class="message-box_bubble" v-html="parsedContent"></div>
       <div v-if="type === 'bot' && props.followUps && props.followUps.length" class="follow-up-list">
-        <t-button v-for="(item, idx) in props.followUps" :key="idx" @click="emit('follow-up', item)" theme="default"
-          variant="base" size="small" class="follow-up-btn">
+        <t-button
+          v-for="(item, idx) in props.followUps"
+          :key="idx"
+          @click="emit('follow-up', item)"
+          theme="default"
+          variant="base"
+          size="small"
+          class="follow-up-btn"
+        >
           {{ item }}
         </t-button>
       </div>
@@ -25,10 +35,11 @@
 
 <script setup lang="ts">
 import RobotAvatar from '@assets/images/robot.png';
+import hljs from 'highlight.js';
+import { marked } from 'marked';
 import { UserIcon } from 'tdesign-icons-vue-next';
 import { computed, ref, onMounted, defineEmits } from 'vue';
-import { marked } from 'marked';
-import hljs from 'highlight.js';
+
 import 'highlight.js/styles/github-dark.min.css';
 import { useAppConfig } from '@/utils/store/app-config';
 
@@ -50,7 +61,7 @@ marked.use({
   breaks: false,
   gfm: true,
   mangle: false,
-  headerIds: false
+  headerIds: false,
 });
 
 // 解析Markdown内容
@@ -60,25 +71,15 @@ const parsedContent = computed(() => {
 });
 
 // 样式计算属性
-const borderRadius = computed(() =>
-  props.type === 'user' ? '0.8rem 0.8rem 1.6rem 0.8rem' : '0.8rem 0.8rem 0.8rem 1.6rem'
-);
+const borderRadius = computed(() => (props.type === 'user' ? '0.8rem 0.8rem 1.6rem 0.8rem' : '0.8rem 0.8rem 0.8rem 1.6rem'));
 
-const bgColor = computed(() =>
-  props.type === 'user' ? 'var(--td-brand-color)' : '#ffffff'
-);
+const bgColor = computed(() => (props.type === 'user' ? 'var(--td-brand-color)' : '#ffffff'));
 
-const color = computed(() =>
-  props.type === 'user' ? '#ffffff' : '#444444'
-);
+const color = computed(() => (props.type === 'user' ? '#ffffff' : '#444444'));
 
-const flexDirection = computed(() =>
-  props.type === 'user' ? 'row-reverse' : 'row'
-);
+const flexDirection = computed(() => (props.type === 'user' ? 'row-reverse' : 'row'));
 
-const avatarSize = computed(() =>
-  appConfig.enableMobileLayout ? 'medium' : 'large'
-);
+const avatarSize = computed(() => (appConfig.enableMobileLayout ? 'medium' : 'large'));
 
 // md高亮渲染
 onMounted(() => {

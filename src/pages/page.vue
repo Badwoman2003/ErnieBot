@@ -4,8 +4,7 @@
       <MessageBox v-for="(item, index) in messageList" :key="index" :type="item.type" :content="item.content" />
     </transition-group>
     <QuestionBox @submit="getAnswer" :loading />
-    <t-sticky-tool @click="handleStickyToolClick" :offset="stickyToolOffset" :type="stickyToolType"
-      placement="right-bottom">
+    <t-sticky-tool @click="handleStickyToolClick" :offset="stickyToolOffset" :type="stickyToolType" placement="right-bottom">
       <t-sticky-item label="新对话">
         <template #icon>
           <chat-add-icon />
@@ -111,7 +110,7 @@ async function getAnswer(question: string) {
 const createDialog = async () => {
   try {
     conversationId.value = await apis.createDialog();
-    console.log('当前会话id: ' + conversationId.value);
+    console.log(`当前会话id: ${conversationId.value}`);
   } catch (err) {
     console.error(err);
   }
@@ -119,8 +118,7 @@ const createDialog = async () => {
 
 onMounted(() => {
   createDialog();
-})
-
+});
 </script>
 
 <style scoped lang="scss">

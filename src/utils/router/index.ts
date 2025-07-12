@@ -54,8 +54,8 @@ const routes: RouteRecordRaw[] = [
     path: '/test',
     name: 'test',
     component: () => import('@/components/DialogBox/DialogBox.vue'),
-    children: []
-  }
+    children: [],
+  },
 ];
 
 setRouteRecords(asyncRouteRoot, routes);

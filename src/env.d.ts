@@ -12,6 +12,8 @@ interface ImportMetaEnv {
   readonly VITE_APP_SLOGAN: string;
   readonly VITE_BASE: string;
   readonly VITE_MOBILE_LAYOUT_BREAKPOINT: string;
+  readonly VITE_PAD_LAYOUT_BREAKPOINT: string;
+  readonly VITE_DESKTOP_LAYOUT_BREAKPOINT: string;
   readonly VITE_API_PREFIX: string;
   readonly VITE_BOT_ID: string;
 }

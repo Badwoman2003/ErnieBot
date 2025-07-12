@@ -6,8 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { onUnmounted, ref, onMounted } from 'vue';
+import { computed, onUnmounted, ref, onMounted } from 'vue';
 
 const emit = defineEmits<{
   (e: 'submit', value: string): void;
@@ -37,8 +36,6 @@ onMounted(() => {
 onUnmounted(() => {
   inputRef.value?.removeEventListener('keypress', submitOnEnter);
 });
-
-
 </script>
 
 <style scoped lang="scss">
